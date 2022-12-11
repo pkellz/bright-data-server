@@ -1,4 +1,4 @@
-import HttpStatusCodes from '@src/models/httpStatusCodes';
+import { HttpStatusCodes } from '@src/models/httpStatusCodes';
 
 /**
  * Error with status code and message

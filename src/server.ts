@@ -4,10 +4,8 @@ import express, { Request, Response } from 'express';
 import 'express-async-errors';
 import apiRouter from './routes/api';
 import logger from 'jet-logger';
-import config from '@src/models/config';
-import HttpStatusCodes from '@src/models/httpStatusCodes';
-import { NodeEnvs } from '@src/config';
-import { RouteError } from '@src/models/route';
+import config from '@src/config';
+import { HttpStatusCodes, NodeEnvs, RouteError } from '@src/models';
 
 const app = express();
 
