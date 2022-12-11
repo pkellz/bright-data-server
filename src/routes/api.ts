@@ -1,22 +1,12 @@
-import { Router } from 'express';
-
-
-// **** Init **** //
-
+import { Router, Request, Response } from 'express';
+import logger from 'jet-logger';
 const apiRouter = Router();
 
-
-// **** Setup auth routes **** //
-
-
-
-// **** Setup user routes **** //
-
-
-// Add userRouter
-// apiRouter.use(userRoutes.paths.basePath, userRouter);
-
-
-// **** Export default **** //
+// Test route
+apiRouter.post('/', (req: Request, res: Response) => {
+  logger.info(req.body, true);
+  const { name } = (req.body as any);
+  return res.send(`Hello, ${name as string}`);
+});
 
 export default apiRouter;

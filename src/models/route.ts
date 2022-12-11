@@ -1,9 +1,4 @@
-/**
- * Miscellaneous shared classes go here.
- */
-
-import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
-
+import HttpStatusCodes from '@src/models/httpStatusCodes';
 
 /**
  * Error with status code and message
