@@ -8,7 +8,7 @@ const collectorId = config.brightData_collectorId;
 export async function triggerCollector(keyword: string): Promise<{ success: boolean }> {
   const method = "triggerCollector";
   const metadata = { method, keyword };
-  logger.info({ message: "Calling triggerCollector()", method }, true);    
+  logger.info({ message: "Calling triggerCollector()", method }, true);
 
   if (!keyword) {
     logger.info({ message: "No keyword provided", data: { metadata } }, true);
@@ -26,12 +26,11 @@ export async function triggerCollector(keyword: string): Promise<{ success: bool
   const options: AxiosRequestConfig = {
     method: 'POST',
     headers,
-    data: JSON.stringify(body),
   };
   try {
-    const result = await axios.post(apiUrl, options);
+    const result = await axios.post(apiUrl, JSON.stringify(body), options);
     if (result.status >= 400) {
-      logger.err({ message: "Failed to trigger the Bright Data collector", data: { result, apiUrl, options, metadata } });
+      logger.err({ message: "Failed to trigger the Bright Data collector", data: { result, apiUrl, options, metadata } }, true);
       return { success: false };
     }
 
