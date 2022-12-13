@@ -14,7 +14,7 @@
   },
   "rules": {
     "max-len": [
-      "warn",
+      0,
       {
         "code": 96
       }

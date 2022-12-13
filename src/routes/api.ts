@@ -1,24 +1,33 @@
 import { Router, Request, Response } from 'express';
 import logger from 'jet-logger';
+import { triggerCollector } from "../services";
 const apiRouter = Router();
 
 interface ICollect {
-  product: string;
+  keyword: string;
 }
 
 /**
  * Triggers a Bright Data collector for a given product
  */
-apiRouter.post('/collect', (req: Request, res: Response) => {
+apiRouter.post('/collect', async (req: Request, res: Response) => {
   const method = 'brightData.collect';
-  // Take in product name
-  const { product } = (req.body as ICollect);
+  const metadata = { method, body: req.body as ICollect };
+  const { keyword } = (req.body as ICollect);
+
+  if (!keyword) {
+    logger.err({ message: "No keyword provided", data: { metadata } }, true);
+    return res.status(400).json({ success: false, message: "No keyword provided" });
+  }
 
   try {
-    // TODO Trigger Bright Data collector
-    logger.info("Triggering Bright Data collector...");
-    logger.info(product, true);
-  
+    const response = await triggerCollector(keyword);
+    if(!response.success)
+    {
+      logger.err({ message: "Failed to trigger the Bright Data collector", data: { response, metadata } }, true);
+      return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
+    }
+
     return res.status(200).json({ success: true });
   }
   catch (error) {
@@ -27,8 +36,9 @@ apiRouter.post('/collect', (req: Request, res: Response) => {
       message = error.message;
     }
 
-    logger.err({ method, message, error }, true);
-    return res.sendStatus(500);
+    logger.err({ method, message, error: error as unknown }, true);
+    return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
   }
 });
+
 export default apiRouter;

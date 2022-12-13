@@ -5,9 +5,16 @@ import config from '../config';
 const BEARER_TOKEN = config.brightData_bearerToken;
 const collectorId = config.brightData_collectorId;
 
-logger.info(BEARER_TOKEN + " " + collectorId, true);
+export async function triggerCollector(keyword: string): Promise<{ success: boolean }> {
+  const method = "triggerCollector";
+  const metadata = { method, keyword };
+  logger.info({ message: "Calling triggerCollector()", method }, true);    
 
-async function collect(keyword: string) {
+  if (!keyword) {
+    logger.info({ message: "No keyword provided", data: { metadata } }, true);
+    return { success: false };
+  }
+
   const apiUrl = `https://api.brightdata.com/dca/trigger?collector=${collectorId}&queue_next=1`;
   const headers = {
     'Authorization': 'Bearer ' + BEARER_TOKEN,
@@ -18,21 +25,21 @@ async function collect(keyword: string) {
   };
   const options: AxiosRequestConfig = {
     method: 'POST',
-    headers: headers,
+    headers,
     data: JSON.stringify(body),
   };
-  try{
+  try {
     const result = await axios.post(apiUrl, options);
-  }
-  catch(error)
-  {
- 
-  }
-  
+    if (result.status >= 400) {
+      logger.err({ message: "Failed to trigger the Bright Data collector", data: { result, apiUrl, options, metadata } });
+      return { success: false };
+    }
 
-  logger.info(result, true);
+    logger.info({ message: "Bright Data collector triggered", data: { result, metadata } }, true);
+    return { success: true };
+  }
+  catch (error) {
+    logger.err({ error: error as unknown, apiUrl, options, metadata }, true);
+    return { success: false };
+  }
 }
-
-export default {
-  collect,
-};
