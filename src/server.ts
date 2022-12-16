@@ -1,6 +1,6 @@
 import morgan from 'morgan';
 import helmet from 'helmet';
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
 import apiRouter from './routes/api';
 import logger from 'jet-logger';
@@ -30,6 +30,8 @@ app.use((
   err: Error,
   _: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction,
 ) => {
   logger.err(err, true);
   let status = HttpStatusCodes.BAD_REQUEST;
@@ -37,6 +39,13 @@ app.use((
     status = err.status;
   }
   return res.status(status).json({ error: err.message });
+});
+
+process.on('warning', e => logger.warn(e.stack));
+
+process.on('uncaughtException', (err, origin) => {
+  logger.err({ err, origin }, true);
+  throw new Error(err as unknown as string);
 });
 
 export default app;

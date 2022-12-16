@@ -9,7 +9,7 @@ interface ICollect {
 /**
  * Triggers a Bright Data collector for a given product
  */
-export async function collect(req: Request, res: Response) {
+export async function collect(req: Request, res: Response): Promise<Response> {
   const method = 'brightData.collect';
   const metadata = { method, body: req.body as ICollect };
   const { keyword } = (req.body as ICollect);

@@ -1,7 +1,6 @@
 import config from '@src/config';
 import logger from 'jet-logger';
-import { MongoClient, Db, Collection } from 'mongodb';
-
+import { MongoClient, Db, Collection, Document } from 'mongodb';
 interface IThenable {
   then: (resolve: (value: unknown) => void, reject?: (reason: unknown) => void) => void;
 }
@@ -9,18 +8,18 @@ interface IThenable {
 class MongoDB {
   private connectionString: string;
   private client: MongoClient;
-  private db: Db;
-  private collection: Collection<Document>;
+  private db: Db | undefined;
+  private collection: Collection<Document> | undefined;
   public Ready: IThenable;
 
   constructor() {
     this.connectionString = config.mongo_connectionString;
     this.client = new MongoClient(this.connectionString);
-
     this.Ready = new Promise((resolve, reject) => {
       this.client.connect()
-        .then((data) => {
-          logger.info({ message: "Connected to MongoDB", data }, true);
+        .then(() => {
+          logger.info({ message: "MongoDB Client connected" }, true);
+
           resolve(undefined);
         })
         .catch(error => {
@@ -33,23 +32,35 @@ class MongoDB {
   initDb() {
     this.db = this.client.db('bright-data');
     this.collection = this.db.collection('products');
+    logger.info({ message: "MongoDB Database and Collection initialized" }, true);
   }
 
-  async find<T>(query: Record<string, unknown>): Promise<T[]> {
-    // TODO
-  }
+  // async find<T>(query: Record<string, unknown>): Promise<T[]> {
+  //   // TODO
+  // }
 
-  async insertMany(data: Record<string, unknown>[]): Promise<{success: boolean}> {
-    // TODO 
-    const success = false;
-    await this.collection.insertMany(data);
-    return {success};
+  async insertMany(data: Document[]): Promise<{ success: boolean }> {
+    if (data.length === 0) {
+      logger.err({ message: "No data to insert" }, true);
+      return { success: false };
+    }
+
+    const insertResult = await this.collection?.insertMany(data);
+
+    if (insertResult?.insertedCount === data.length) {
+      logger.info(`Inserted all ${data.length} items successfully`, true);
+
+      return { success: true };
+    }
+    else {
+      logger.err({ message: `Failed to insert all ${data.length} items`, itemsInserted: insertResult?.insertedCount }, true);
+      return { success: false };
+    }
   }
 }
 
-// export default new MongoDB();
-export const Mongo = new MongoDB();
+export const mongo = new MongoDB();
 
-Mongo.Ready.then((val: unknown) => {
-  Mongo.initDb();
+mongo.Ready.then(() => {
+  mongo.initDb();
 });
