@@ -1,32 +1,20 @@
 import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { mongo } from '@src/services';
-
-interface IProduct {
-  search: string,
-  title: string,
-  url: string,
-  price: number,
-  image: string,
-  imageset: string,
-  input: {
-    keyword: string
-  }
-  error?: string
-}
+import { IQuery } from '@src/models';
 
 /**
- * Receive webhook from Bright Data collector and process the data
+ * Receive webhook from Bright Data collector and insert the Query into Mongo
  */
 export async function webhook(req: Request, res: Response): Promise<Response> {
   const method = "brightData.webhook";
-  const metadata = { method, body: req.body as IProduct[] };
-  const data = req.body as IProduct[];
+  const metadata = { method, body: req.body as IQuery };
+  const data = req.body as IQuery;
 
   // TODO Validate the data?
 
   try {
-    const result = await mongo.insertMany(data);
+    const result = await mongo.insert(data);
 
     if (!result.success) {
       logger.err({ message: "Failed to insert products into Mongo", ...{ result, metadata } }, true);

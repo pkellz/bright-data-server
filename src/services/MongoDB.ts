@@ -1,6 +1,7 @@
 import config from '@src/config';
 import logger from 'jet-logger';
-import { MongoClient, Db, Collection, Document } from 'mongodb';
+import { MongoClient, Db, Collection, Document, FindOptions } from 'mongodb';
+
 interface IThenable {
   then: (resolve: (value: unknown) => void, reject?: (reason: unknown) => void) => void;
 }
@@ -31,29 +32,28 @@ class MongoDB {
 
   initDb() {
     this.db = this.client.db('bright-data');
-    this.collection = this.db.collection('products');
+    this.collection = this.db.collection('queries');
     logger.info({ message: "MongoDB Database and Collection initialized" }, true);
   }
 
-  // async find<T>(query: Record<string, unknown>): Promise<T[]> {
-  //   // TODO
-  // }
-
-  async insertMany(data: Document[]): Promise<{ success: boolean }> {
-    if (data.length === 0) {
-      logger.err({ message: "No data to insert" }, true);
-      return { success: false };
+  async find<T extends Document>(query: Partial<T>, options?: FindOptions): Promise<T[] | undefined> {
+    try {
+      const result = await this.collection?.find<T>(query, options).toArray();
+      return result;
     }
+    catch (error) {
+      logger.err({ message: "Failed to find data", error: error as unknown }, true);
+      return [];
+    }
+  }
 
-    const insertResult = await this.collection?.insertMany(data);
-
-    if (insertResult?.insertedCount === data.length) {
-      logger.info(`Inserted all ${data.length} items successfully`, true);
-
+  async insert(data: Document): Promise<{ success: boolean }> {
+    try {
+      await this.collection?.insertOne(data);
       return { success: true };
     }
-    else {
-      logger.err({ message: `Failed to insert all ${data.length} items`, itemsInserted: insertResult?.insertedCount }, true);
+    catch (error) {
+      logger.err({ message: "Failed to insert data", error: error as unknown }, true);
       return { success: false };
     }
   }
