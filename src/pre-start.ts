@@ -13,11 +13,10 @@ const options = commandLineArgs([
   },
 ]);
 
+const configOptions = options.env !== 'production' ? { path: path.join(__dirname, `../${String(options.env)}.env`) } : {};
 
 // Set the env file
-const config = dotenv.config({
-  path: path.join(__dirname, `../env/${String(options.env)}.env`),
-});
+const config = dotenv.config(configOptions);
 
 if (config.error) {
   throw config.error;
