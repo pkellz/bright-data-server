@@ -3,13 +3,10 @@ export interface IQuery {
     products: IProduct[]
 }
 
-interface IProduct {
+export interface IProduct {
     title: string,
     url: string,
     price: number,
     image: string,
-    input: {
-        keyword: string
-    }
-    error?: string
+    competitor: string
 }

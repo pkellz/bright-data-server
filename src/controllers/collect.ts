@@ -16,14 +16,14 @@ export async function collect(req: Request, res: Response): Promise<Response> {
 
   if (!keyword) {
     logger.err({ message: "No keyword provided", data: { metadata } }, true);
-    return res.status(400).json({ success: false, message: "No keyword provided" });
+    return res.status(400).json({ success: false, errorMessage: "No keyword provided" });
   }
 
   try {
     const response = await triggerCollector(keyword);
     if (!response.success) {
       logger.err({ message: "Failed to trigger the Bright Data collector", data: { response, metadata } }, true);
-      return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
+      return res.status(500).json({ success: false, errorMessage: "An unexpected error has occurred" });
     }
 
     return res.status(200).json({ success: true });
@@ -35,6 +35,6 @@ export async function collect(req: Request, res: Response): Promise<Response> {
     }
 
     logger.err({ method, message, error: error as unknown }, true);
-    return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
+    return res.status(500).json({ success: false, errorMessage: "An unexpected error has occurred" });
   }
 }

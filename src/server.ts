@@ -6,11 +6,17 @@ import apiRouter from './routes/api';
 import logger from 'jet-logger';
 import config from '@src/config';
 import { HttpStatusCodes, NodeEnvs, RouteError } from '@src/models';
+import qs from 'qs';
+import cors from 'cors';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Query parser
+app.set('query parser', (str: string) => qs.parse(str));
 
 // Show routes called in console during development
 if (config.nodeEnv === NodeEnvs.Dev) {

@@ -18,7 +18,7 @@ export async function webhook(req: Request, res: Response): Promise<Response> {
 
     if (!result.success) {
       logger.err({ message: "Failed to insert products into Mongo", ...{ result, metadata } }, true);
-      return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
+      return res.status(500).json({ success: false, errorMessage: "An unexpected error has occurred" });
     }
 
     return res.status(200).json({ success: true });
@@ -30,6 +30,6 @@ export async function webhook(req: Request, res: Response): Promise<Response> {
     }
 
     logger.err({ method, message, error: error as unknown, metadata }, true);
-    return res.status(500).json({ success: false, message: "An unexpected error has occurred" });
+    return res.status(500).json({ success: false, errorMessage: "An unexpected error has occurred" });
   }
 }

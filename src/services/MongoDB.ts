@@ -36,14 +36,20 @@ class MongoDB {
     logger.info({ message: "MongoDB Database and Collection initialized" }, true);
   }
 
-  async find<T extends Document>(query: Partial<T>, options?: FindOptions): Promise<T[] | undefined> {
+  async find<T extends Document>(query: Partial<T>, options?: FindOptions): Promise<T | undefined> {
     try {
-      const result = await this.collection?.find<T>(query, options).toArray();
+      const result = await this.collection?.findOne<T>(query, options);
+      if(!result)
+      {
+        logger.err({ message: "Failed to find Query", condition: query }, true);
+        return;
+      }
+
       return result;
     }
     catch (error) {
       logger.err({ message: "Failed to find data", error: error as unknown }, true);
-      return [];
+      return;
     }
   }
 
