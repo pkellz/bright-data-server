@@ -8,13 +8,13 @@ import { IQuery } from '@src/models';
  */
 export async function webhook(req: Request, res: Response): Promise<Response> {
   const method = "brightData.webhook";
-  const metadata = { method, body: req.body as IQuery };
-  const data = req.body as IQuery;
+  const metadata = { method, body: req.body as IQuery[] };
+  const data = req.body as IQuery[];
 
   // TODO Validate the data?
 
   try {
-    const result = await mongo.insert(data);
+    const result = await mongo.insert<IQuery>(data[0]);
 
     if (!result.success) {
       logger.err({ message: "Failed to insert products into Mongo", ...{ result, metadata } }, true);

@@ -47,7 +47,7 @@ class MongoDB {
     }
   }
 
-  async insert(data: Document): Promise<{ success: boolean }> {
+  async insert<T extends Document>(data: T): Promise<{ success: boolean }> {
     try {
       await this.collection?.insertOne(data);
       return { success: true };
