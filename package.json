@@ -4,7 +4,7 @@
   "scripts": {
     "build": "npx ts-node build.ts",
     "lint": "npx eslint --ext .ts src/",
-    "start": "NODE_ENV=production node -r module-alias/register ./dist --env=production",
+    "start": "node -r module-alias/register ./dist --env=production",
     "dev": "nodemon",
     "reinstall": "rimraf node_modules package-lock.json && npm install"
   },

@@ -16,8 +16,8 @@ const options = commandLineArgs([
 const configOptions = options.env !== 'production' ? { path: path.join(__dirname, `../${String(options.env)}.env`) } : {};
 
 // Set the env file
-const config = dotenv.config(configOptions);
+dotenv.config(configOptions);
 
-if (config.error) {
-  throw config.error;
-}
+// if (config.error) {
+//   throw config.error;
+// }
