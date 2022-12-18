@@ -6,9 +6,10 @@ import { IQuery, IProduct } from '@src/models';
 enum Competitors {
   AMAZON = "amazon",
   EBAY = "ebay",
+  NEWEGG = 'newegg',
 }
 
-const competitors = [Competitors.AMAZON, Competitors.EBAY];
+const competitors = [Competitors.AMAZON, Competitors.EBAY, Competitors.NEWEGG];
 
 /**
  * Given a keyword, search the db for a Query object. If found, return data.
